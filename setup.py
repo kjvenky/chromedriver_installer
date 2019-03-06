@@ -18,6 +18,9 @@ except ImportError:
 CHROMEDRIVER_INFO_URL = (
     'https://sites.google.com/a/chromium.org/chromedriver/downloads'
 )
+CHROMEDRIVER_LATEST_RELEASE_URL = (
+    'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
+)
 CHROMEDRIVER_URL_TEMPLATE = (
     'http://chromedriver.storage.googleapis.com/{version}/chromedriver_{os_}'
     '{architecture}.zip'
@@ -43,8 +46,13 @@ def get_chromedriver_version():
     if match:
         return match.group(1)
     else:
-        raise Exception('Unable to get latest chromedriver version from {0}'
-                        .format(CHROMEDRIVER_INFO_URL))
+        try:
+            response = request.urlopen(CHROMEDRIVER_LATEST_RELEASE_URL)
+            content = response.read()
+            return str(content)
+        except:
+            raise Exception('Unable to get latest chromedriver version from {0} or {1}'
+                        .format(CHROMEDRIVER_INFO_URL, CHROMEDRIVER_LATEST_RELEASE_URL))
 
 
 class BuildScripts(build_scripts):
